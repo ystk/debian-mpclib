@@ -1,1 +1,1 @@
-usr/lib/libmpc.so.* /usr/lib
+usr/lib/*/libmpc.so.*

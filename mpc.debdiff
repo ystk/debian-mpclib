@@ -1,0 +1,73 @@
+diff -u mpclib-0.9/debian/control mpclib-0.9/debian/control
+--- mpclib-0.9/debian/control
++++ mpclib-0.9/debian/control
+@@ -11,6 +11,7 @@
+ Package: libmpc-dev
+ Section: libdevel
+ Architecture: any
++Multi-Arch: same
+ Depends: libmpc2 (= ${binary:Version}), libmpfr-dev, libgmp-dev, ${misc:Depends}
+ Description: multiple precision complex floating-point library development package
+  MPC is a portable library written in C for arbitrary precision
+@@ -27,6 +28,8 @@
+ Package: libmpc2
+ Section: libs
+ Architecture: any
++Multi-Arch: same
++Pre-Depends: ${misc:Pre-Depends}
+ Depends: ${shlibs:Depends}, ${misc:Depends}
+ Description: multiple precision complex floating-point library
+  MPC is a portable library written in C for arbitrary precision
+diff -u mpclib-0.9/debian/changelog mpclib-0.9/debian/changelog
+--- mpclib-0.9/debian/changelog
++++ mpclib-0.9/debian/changelog
+@@ -1,3 +1,9 @@
++mpclib (0.9-3.1) unstable; urgency=low
++
++  * Install into multiarch locations.
++
++ -- Matthias Klose <doko@debian.org>  Sat, 08 Oct 2011 13:02:36 +0200
++
+ mpclib (0.9-3) unstable; urgency=low
+ 
+   * Don't ship .la file (closes: #622446).
+diff -u mpclib-0.9/debian/rules mpclib-0.9/debian/rules
+--- mpclib-0.9/debian/rules
++++ mpclib-0.9/debian/rules
+@@ -14,6 +14,7 @@
+ # from having to guess our platform (since we know it already)
+ DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
++DEB_HOST_MULTIARCH  ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+ ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+ CROSS= --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+ else
+@@ -41,7 +42,11 @@
+ ifneq "$(wildcard /usr/share/misc/config.guess)" ""
+ 	cp -f /usr/share/misc/config.guess config.guess
+ endif
+-	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
++	./configure $(CROSS) --prefix=/usr \
++		--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
++		--mandir=\$${prefix}/share/man \
++		--infodir=\$${prefix}/share/info \
++		CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
+ 
+ 
+ build: build-stamp
+diff -u mpclib-0.9/debian/libmpc-dev.install mpclib-0.9/debian/libmpc-dev.install
+--- mpclib-0.9/debian/libmpc-dev.install
++++ mpclib-0.9/debian/libmpc-dev.install
+@@ -1,3 +1,3 @@
+-usr/lib/libmpc.so	usr/lib
+-usr/lib/libmpc.a	usr/lib
+-usr/include/*.h		usr/include
++usr/lib/*/libmpc.so
++usr/lib/*/libmpc.a
++usr/include/*.h
+diff -u mpclib-0.9/debian/libmpc2.install mpclib-0.9/debian/libmpc2.install
+--- mpclib-0.9/debian/libmpc2.install
++++ mpclib-0.9/debian/libmpc2.install
+@@ -1 +1 @@
+-usr/lib/libmpc.so.* /usr/lib
++usr/lib/*/libmpc.so.*
