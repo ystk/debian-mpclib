@@ -1,6 +1,6 @@
 /* test file for mpc_pow_ui.
 
-Copyright (C) 2009, 2010 Paul Zimmermann, Andreas Enge
+Copyright (C) INRIA, 2009, 2010
 
 This file is part of the MPC Library.
 
@@ -23,9 +23,9 @@ MA 02111-1307, USA. */
 #include "mpc-tests.h"
 
 static void
-compare_mpc_pow (mp_prec_t pmax, int iter, unsigned long nbits)
+compare_mpc_pow (mpfr_prec_t pmax, int iter, unsigned long nbits)
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   mpc_t x, y, z, t;
   unsigned long n;
   int i, inex_pow, inex_pow_ui;
@@ -61,7 +61,7 @@ compare_mpc_pow (mp_prec_t pmax, int iter, unsigned long nbits)
               }
             if (inex_pow != inex_pow_ui)
               {
-                printf ("mpc_pow and mpc_pow_ui gives different flags for x=");
+                printf ("mpc_pow and mpc_pow_ui give different flags for x=");
                 mpc_out_str (stdout, 10, 0, x, MPC_RNDNN);
                 printf (" n=%lu\n", n);
                 printf ("mpc_pow gives %d\n", inex_pow);
@@ -86,8 +86,8 @@ main (int argc, char *argv[])
 
   if (argc != 1)
     {
-      mp_prec_t p;
-      unsigned long n, k;
+      mpfr_prec_t p;
+      long int n, k;
       mpc_t res;
       if (argc != 3 && argc != 4)
         {
@@ -96,14 +96,16 @@ main (int argc, char *argv[])
         }
       p = atoi (argv[1]);
       n = atoi (argv[2]);
+      MPC_ASSERT (n >= 0);
       k = (argc > 3) ? atoi (argv[3]) : 1;
+      MPC_ASSERT (k >= 0);
       mpc_init2 (z, p);
       mpc_init2 (res, p);
       mpfr_const_pi (mpc_realref (z), GMP_RNDN);
       mpfr_div_2exp (mpc_realref (z), mpc_realref (z), 2, GMP_RNDN);
       mpfr_const_log2 (mpc_imagref (z), GMP_RNDN);
       while (k--)
-        mpc_pow_ui (res, z, n, MPC_RNDNN);
+        mpc_pow_ui (res, z, (unsigned long int) n, MPC_RNDNN);
       mpc_clear (z);
       mpc_clear (res);
       return 0;
@@ -111,20 +113,6 @@ main (int argc, char *argv[])
 
   test_start ();
   data_check (f, "pow_ui.dat");
-
-  mpc_init2 (z, 5);
-  mpc_set_ui_ui (z, 3, 2, MPC_RNDNN);
-  mpc_pow_ui (z, z, 3, MPC_RNDNN);
-  if (mpc_cmp_si_si (z, -9, 46) != 0)
-    {
-      printf ("Error for mpc_pow_ui (1)\n");
-      printf ("expected (-9,46)\n");
-      printf ("got ");
-      mpc_out_str (stdout, 10, 0, z, MPC_RNDNN);
-      printf ("\n");
-      exit (1);
-    }
-  mpc_clear (z);
 
   compare_mpc_pow (100, 5, 19);
 

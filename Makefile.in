@@ -41,7 +41,10 @@ DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
 	COPYING.LIB ChangeLog INSTALL NEWS TODO config.guess \
 	config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_c_check_flag.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/mpc.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -167,6 +170,7 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+MPC_LOG_H = @MPC_LOG_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -240,9 +244,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src tests doc
-include_HEADERS = src/mpc.h
-EXTRA_DIST = Makefile.vc tests/tgeneric.c
+EXTRA_HEADERS = src/mpc-log.h
+include_HEADERS = src/mpc.h @MPC_LOG_H@
+EXTRA_DIST = src/mpc-log.h tests/tgeneric.c Makefile.vc
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
